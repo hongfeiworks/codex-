@@ -17,7 +17,15 @@
 
 1. `C:\Users\56547\.codex\AGENTS.md`
 2. `C:\Users\56547\.codex\config.toml`
-3. `C:\Users\56547\Documents\Codex\2026-05-07\https-linux-do-t-topic-1413296\codex-setup-guide.md`
+3. `C:\Users\56547\.codex\prompts\refactor-compact-zh.md`
+4. `C:\Users\56547\.codex\prompts\comment-doc-zh.md`
+5. `C:\Users\56547\.codex\prompts\debug-root-cause-zh.md`
+6. `C:\Users\56547\.codex\prompts\instruction-reflector-zh.md`
+7. `C:\Users\56547\.codex\skills\windows-utf8-guard\SKILL.md`
+8. `C:\Users\56547\.codex\skills\compact-refactor\SKILL.md`
+9. `C:\Users\56547\.codex\skills\zh-comment-doc\SKILL.md`
+10. `C:\Users\56547\.codex\skills\verification-before-completion-zh\SKILL.md`
+11. `C:\Users\56547\Documents\Codex\2026-05-07\https-linux-do-t-topic-1413296\codex调教.md`
 
 其中：
 
@@ -239,6 +247,111 @@ multi_agent = false
 
 这个规则很值钱，能防止“为了修一点小问题，顺手把半个环境搞乱”。
 
+## 4.3 `C:\Users\56547\.codex\prompts\`
+
+这次新增了 4 个高频 prompt，目的不是堆数量，而是把最常重复的几类任务做成一键调用。
+
+### 1. `refactor-compact-zh.md`
+
+用途：
+
+- 紧凑型重构
+- 少拆小方法
+- 保持主流程线性可读
+
+适合场景：
+
+- 代码被拆得太碎
+- 想清理结构但不想重架构
+- 希望 Codex 少做形式主义抽象
+
+### 2. `comment-doc-zh.md`
+
+用途：
+
+- 补必要中文注释
+- 补必要中文说明文档
+- 避免英文注释和废话注释
+
+适合场景：
+
+- 老代码缺注释
+- 改动后需要补说明
+- 需要中文变更说明或迁移说明
+
+### 3. `debug-root-cause-zh.md`
+
+用途：
+
+- 排查 bug 时先找根因，再修复
+- 避免一上来就拍脑袋改代码
+
+适合场景：
+
+- 线上或本地异常排查
+- 回归 bug
+- 不确定到底是环境问题、数据问题还是代码问题
+
+### 4. `instruction-reflector-zh.md`
+
+用途：
+
+- 回顾最近几轮对话和任务结果
+- 反推 `AGENTS.md` 或项目规则哪里还需要微调
+
+适合场景：
+
+- 发现 Codex 还在反复犯同类问题
+- 想逐步迭代自己的长期规则
+
+## 4.4 `C:\Users\56547\.codex\skills\`
+
+这次新增了 4 个偏执行型 skill，用来把高频复杂任务固定成稳定流程。
+
+### 1. `windows-utf8-guard`
+
+用途：
+
+- 处理 Windows 下中文乱码、UTF-8、BOM、PowerShell 误读、CRLF/LF 混乱
+
+价值：
+
+- 这是你当前环境里最有针对性的 skill
+- 能把“文件坏了”和“只是控制台读花了”区分开
+
+### 2. `compact-refactor`
+
+用途：
+
+- 执行“清理代码但不要拆碎”的重构
+
+价值：
+
+- 把“什么时候该内联、什么时候该抽方法”写成明确规则
+- 比每次口头提醒更稳定
+
+### 3. `zh-comment-doc`
+
+用途：
+
+- 统一中文注释、中文 README、中文变更说明、中文迁移说明的产出方式
+
+价值：
+
+- 避免英文说明反复冒出来
+- 避免注释质量忽高忽低
+
+### 4. `verification-before-completion-zh`
+
+用途：
+
+- 在宣布完成前，强制补一轮验证
+
+价值：
+
+- 防止“代码改了，但没真正验证”
+- 尤其适合修 bug、重构、配置改动后的收尾阶段
+
 ## 5. 关于中文乱码，这次到底解决了多少
 
 先说结论：
@@ -343,11 +456,15 @@ trim_trailing_whitespace = false
 
 1. 全局行为规则
 2. 关键配置开关
+3. 高频 prompts
+4. 高频 skills
 
 对应文件就是：
 
 1. `C:\Users\你的用户名\.codex\AGENTS.md`
 2. `C:\Users\你的用户名\.codex\config.toml`
+3. `C:\Users\你的用户名\.codex\prompts\`
+4. `C:\Users\你的用户名\.codex\skills\`
 
 ## 7.2 推荐迁移步骤
 
@@ -365,6 +482,8 @@ trim_trailing_whitespace = false
 
 1. `C:\Users\你的用户名\.codex\AGENTS.md`
 2. `C:\Users\你的用户名\.codex\config.toml`
+3. `C:\Users\你的用户名\.codex\prompts\`
+4. `C:\Users\你的用户名\.codex\skills\`
 
 PowerShell 示例：
 
@@ -372,6 +491,12 @@ PowerShell 示例：
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 Copy-Item -LiteralPath "$env:USERPROFILE\.codex\AGENTS.md" -Destination "$env:USERPROFILE\.codex\AGENTS.md.bak-$stamp" -Force
 Copy-Item -LiteralPath "$env:USERPROFILE\.codex\config.toml" -Destination "$env:USERPROFILE\.codex\config.toml.bak-$stamp" -Force
+if (Test-Path -LiteralPath "$env:USERPROFILE\.codex\prompts") {
+    Copy-Item -LiteralPath "$env:USERPROFILE\.codex\prompts" -Destination "$env:USERPROFILE\.codex\prompts.bak-$stamp" -Recurse -Force
+}
+if (Test-Path -LiteralPath "$env:USERPROFILE\.codex\skills") {
+    Copy-Item -LiteralPath "$env:USERPROFILE\.codex\skills" -Destination "$env:USERPROFILE\.codex\skills.bak-$stamp" -Recurse -Force
+}
 ```
 
 ### 第四步：迁移 `AGENTS.md`
@@ -425,14 +550,48 @@ multi_agent = false
 - MCP 配置
 - 插件配置
 
-### 第六步：确认文件编码
+### 第六步：迁移 `prompts` 和 `skills`
 
-把新电脑上的这两个文件用编辑器打开，确认是 UTF-8。
+把下面这些一并复制到新电脑：
+
+#### prompts
+
+1. `C:\Users\56547\.codex\prompts\refactor-compact-zh.md`
+2. `C:\Users\56547\.codex\prompts\comment-doc-zh.md`
+3. `C:\Users\56547\.codex\prompts\debug-root-cause-zh.md`
+4. `C:\Users\56547\.codex\prompts\instruction-reflector-zh.md`
+
+目标目录：
+
+`C:\Users\你的用户名\.codex\prompts\`
+
+#### skills
+
+1. `C:\Users\56547\.codex\skills\windows-utf8-guard\SKILL.md`
+2. `C:\Users\56547\.codex\skills\compact-refactor\SKILL.md`
+3. `C:\Users\56547\.codex\skills\zh-comment-doc\SKILL.md`
+4. `C:\Users\56547\.codex\skills\verification-before-completion-zh\SKILL.md`
+
+目标目录：
+
+`C:\Users\你的用户名\.codex\skills\`
+
+注意：
+
+- `prompts` 是单文件复制
+- `skills` 是按目录复制，目录名本身就是 skill 名
+- 只复制 `SKILL.md` 不够稳，最好把整个 skill 目录复制过去，后续如果你再补脚本或 references 就不会丢
+
+### 第七步：确认文件编码
+
+把新电脑上的关键中文文件用编辑器打开，确认是 UTF-8。
 
 重点确认：
 
 1. `AGENTS.md`
 2. `config.toml`
+3. `prompts` 里的中文 `.md`
+4. `skills` 里的中文 `SKILL.md`
 
 如果编辑器状态栏能看编码，直接看状态栏最省事。
 
@@ -440,8 +599,9 @@ multi_agent = false
 
 - 如果 `AGENTS.md` 里有大量中文，Windows 上建议直接保存成 `UTF-8 with BOM`
 - `config.toml` 这份文件目前几乎都是 ASCII，通常普通 UTF-8 就够了
+- 中文 prompt 和中文 `SKILL.md` 在 Windows 上也建议优先保存成 `UTF-8 with BOM`
 
-### 第七步：重新打开 Codex
+### 第八步：重新打开 Codex
 
 打开后做三次简单验证。
 
@@ -465,6 +625,13 @@ multi_agent = false
 
 给它一段代码，要求修改，看它会不会把本来一段短逻辑硬拆成一堆小函数。
 
+#### 验证 4：自定义 prompts 与 skills
+
+检查两件事：
+
+1. 在 prompt 菜单里能否看到这 4 个自定义 prompt
+2. 新会话里请求“处理 Windows UTF-8 乱码”或“做紧凑型重构”时，Codex 是否能更自然地贴近新增 skill 的规则
+
 ## 7.3 一键复制时的注意事项
 
 最容易出问题的是 `config.toml`，不是 `AGENTS.md`。
@@ -473,11 +640,13 @@ multi_agent = false
 
 1. `AGENTS.md` 主要是规则文本
 2. `config.toml` 里可能带有你当前机器绑定的 provider 信息、MCP 配置、插件状态
+3. `prompts` 和 `skills` 才是后续效率提升最明显、也最容易被漏迁移的一层
 
 所以：
 
 - `AGENTS.md` 可以更大胆地复制
 - `config.toml` 要看你新电脑是否沿用同一套服务配置
+- `prompts` 和 `skills` 建议整套一起迁
 
 ## 8. 如果以后还想继续加强，有哪几个方向最值
 
@@ -561,6 +730,58 @@ multi_agent = false
 
 如果答案不够明确，就不要开。
 
+## 8.5 本次新增的 Prompts 与 Skills，后面怎么用
+
+### prompts 的使用方式
+
+放在：
+
+`C:\Users\56547\.codex\prompts\`
+
+当前新增：
+
+1. `refactor-compact-zh`
+2. `comment-doc-zh`
+3. `debug-root-cause-zh`
+4. `instruction-reflector-zh`
+
+使用建议：
+
+- 重构但不想拆碎时，用 `refactor-compact-zh`
+- 要补中文注释和中文说明时，用 `comment-doc-zh`
+- 排查问题时，用 `debug-root-cause-zh`
+- 想继续优化规则时，用 `instruction-reflector-zh`
+
+### skills 的使用方式
+
+放在：
+
+`C:\Users\56547\.codex\skills\`
+
+当前新增：
+
+1. `windows-utf8-guard`
+2. `compact-refactor`
+3. `zh-comment-doc`
+4. `verification-before-completion-zh`
+
+使用建议：
+
+- Windows 编码、BOM、乱码排查：`windows-utf8-guard`
+- 少拆方法的重构：`compact-refactor`
+- 中文注释与中文文档：`zh-comment-doc`
+- 改完后强制验证：`verification-before-completion-zh`
+
+### 使用上的实话
+
+这些 prompts 和 skills 的价值不在“替你思考”，而在于：
+
+1. 减少你反复重复同一套要求
+2. 把高频任务固化成稳定工作流
+3. 让 Codex 更容易在你的长期偏好里保持一致
+
+它们本质上是“把你的工作习惯变成可复用入口”。
+
 ## 9. 当前这份方案的核心价值
 
 一句话总结：
@@ -575,6 +796,8 @@ multi_agent = false
 4. 默认补必要中文注释
 5. 默认更谨慎处理编码与换行
 6. 默认在 Windows 语境下做正确决策
+7. 常用工作流已经有了可复用的 prompts
+8. 高频复杂任务已经有了可复用的 skills
 
 ## 10. 附录：当前推荐使用的 `AGENTS.md` 全文
 

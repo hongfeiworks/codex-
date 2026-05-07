@@ -1,0 +1,43 @@
+model_provider = "maolaox0_15"
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+personality = "pragmatic"
+disable_response_storage = true
+
+[features]
+multi_agent = false
+
+[model_providers.maolaox0_15]
+name = "maolaox0_15"
+base_url = "https://maolaoapi.com/v1"
+wire_api = "responses"
+requires_openai_auth = true
+
+[mcp_servers]
+
+[mcp_servers.Serena]
+type = "http"
+url = "http://127.0.0.1:9121/mcp"
+
+[mcp_servers.desktop-commander]
+type = "stdio"
+command = "cmd"
+args = ["/c", "npx", "-y", "@wonderwhy-er/desktop-commander@latest", "--no-onboarding"]
+enabled = true
+
+[mcp_servers.desktop-commander.env]
+SystemRoot = 'C:\Windows'
+
+[marketplaces.openai-bundled]
+last_updated = "2026-05-07T03:02:21Z"
+source_type = "local"
+source = '\\?\C:\Users\56547\.codex\.tmp\bundled-marketplaces\openai-bundled'
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[windows]
+sandbox = "elevated"
+
+[projects.'c:\users\56547']
+trust_level = "trusted"
